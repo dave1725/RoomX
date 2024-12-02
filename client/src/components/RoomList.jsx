@@ -18,74 +18,71 @@ function RoomList() {
       return;
     }
     socket.send(`JOIN ${room}`);
-    console.log(`Requested to join room: ${room}`);
     navigate(`/chat/${room}`);
   };
 
-  const handleServerMessage = (message) => {
-    if (message.startsWith("Available rooms:")) {
-      const roomList = message.replace("Available rooms: ", "").split(", ");
-      setRooms(roomList.filter((room) => room.trim() !== "")); // Update room list
-    } else {
-      console.log("Message from server:", message);
-    }
-  };
-
-  const handleSetUsername = () => {
-    if (socket && username.trim()) {
-      socket.send(`SET_USERNAME ${username}`);
-      localStorage.setItem("username", username); // Store the username in localStorage
-      setIsUsernameSet(true);
-    } else {
-      alert("Please enter a valid username.");
-    }
-  };
-
   useEffect(() => {
-    if (!socket) {
-      const ws = new WebSocket("ws://localhost:6789");
-      ws.onopen = () => {
-        ws.send(`LIST_ROOMS`);
-        console.log("Requested to list rooms.");
-      };
-      ws.onmessage = (event) => {
-        console.log(`Server: ${event.data}`);
-        handleServerMessage(event.data);
-      };
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-      ws.onclose = () => {
-        console.log("Socket closed.");
-      };
-      setSocket(ws);
-    }
+    const ws = new WebSocket("ws://localhost:6789");
+    ws.onopen = () => ws.send(`LIST_ROOMS`);
+    ws.onmessage = (event) => {
+      const message = event.data;
+      if (message.startsWith("Available rooms:")) {
+        setRooms(
+          message.replace("Available rooms: ", "").split(", ").filter(Boolean)
+        );
+      }
+    };
+    setSocket(ws);
   }, []);
 
+  const setUsernameHandler = () => {
+    if (username.trim()) {
+      socket.send(`SET_USERNAME ${username}`);
+      localStorage.setItem("username", username);
+      setIsUsernameSet(true);
+    } else {
+      alert("Enter a valid username.");
+    }
+  };
+
   return (
-    <div>
-      <p>make sure to create an username before joining</p>
-      <div>
+    <div className="p-4">
+      <div className="mb-4">
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Enter your username"
+          className="border rounded p-2 mr-2"
         />
-        <button onClick={handleSetUsername} disabled={isUsernameSet}>
+        <button
+          onClick={setUsernameHandler}
+          className={`px-4 py-2 rounded ${
+            isUsernameSet ? "bg-gray-400 text-white" : "bg-blue-500 text-white"
+          }`}
+          disabled={isUsernameSet}
+        >
           {isUsernameSet ? "Username Set" : "Set Username"}
         </button>
       </div>
-      <h1>Public Rooms</h1>
+      <h1 className="text-xl font-bold mb-4">Public Rooms</h1>
       {rooms.length > 0 ? (
         rooms.map((room) => (
-          <div key={room}>
+          <div
+            key={room}
+            className="flex justify-between items-center border-b py-2"
+          >
             <span>{room}</span>
-            <button onClick={() => joinRoom(room)}>JOIN</button>
+            <button
+              onClick={() => joinRoom(room)}
+              className="bg-blue-500 text-white px-4 py-1 rounded"
+            >
+              Join
+            </button>
           </div>
         ))
       ) : (
-        <p>No rooms available!</p>
+        <p className="text-gray-500">No rooms available!</p>
       )}
     </div>
   );
