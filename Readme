@@ -1,0 +1,48 @@
+# RoomX: Real-Time Web Chat Application
+
+RoomX is a real-time web chat application where users can create, join, and participate in chat rooms. It uses WebSockets for real-time communication and supports features like username setting, public room listing, and persistent room navigation.
+
+---
+
+## Features
+
+- **Username Setup**: Users can set a username to participate in rooms.
+- **Room Management**: Create and join rooms dynamically.
+- **Real-Time Chat**: Chat messages are broadcasted to all members of a room in real-time.
+- **Room List**: View and join available public rooms.
+- **Persistent Navigation**: Navigate between rooms seamlessly.
+
+---
+
+## Frontend Tech Stack
+
+- **React.js**: Frontend framework
+- **Tailwind CSS**: Utility-first CSS framework for styling
+- **React Router**: For managing navigation
+
+---
+
+## Backend Tech Stack
+
+- **Python WebSocket**: Backend WebSocket server to handle real-time communication.
+- **Socket API**: Used for broadcasting and managing rooms and users.
+
+---
+
+## Project Structure
+
+```plaintext
+├── public/
+│   └── index.html
+├──Frontend
+│   └──src/
+│    ├── components/
+│    │   ├── ChatRoom.jsx
+│    │   ├── JoinRoom.jsx
+│    │   ├── RoomList.jsx
+│    └── App.jsx
+├── Backend
+│   ├── server.py
+│   ├── client.py
+├── package.json
+└── README.md
